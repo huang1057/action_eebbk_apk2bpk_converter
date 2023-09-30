@@ -1,0 +1,35 @@
+name: BPK Converter
+
+on:
+    workflow_dispatch:
+      inputs:
+        MANIFEST_URL:
+          description: 'License'
+          required: true
+          default: 'I agreed'
+
+jobs:
+    build:
+      if: github.event.repository.owner.id == github.event.sender.id
+      runs-on: windows-latest
+      permissions:
+        contents: write
+      steps:
+   
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      - name: Run the converter
+        run: |
+            %GITHUB_WORKSPACE%\vaction.exe
+        shell: cmd
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@master
+        with:
+            files: | 
+                ./files/BPK_*.apk
+            name: BPK Converter - ${{ github.run_id }}
+            tag_name: ${{ github.run_id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
